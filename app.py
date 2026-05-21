@@ -238,7 +238,6 @@ def get_new_cases():
     url = f"https://{OMNIDESK_DOMAIN}/api/cases.json"
     params = {
         "status": "opened",
-        "staff_id": "10220143",
         "page": 1,
         "limit": 50
     }
@@ -253,7 +252,14 @@ def get_new_cases():
         if response.status_code == 200:
             data = response.json()
             cases = data.get("cases", [])
-            return [c["case"] for c in cases if isinstance(c, dict) and "case" in c]
+            # Фильтруем только обращения ИИ-агента (staff_id = 10220143)
+            return [
+                c["case"] for c in cases
+                if isinstance(c, dict) and "case" in c
+                and str(c["case"].get("staff_id", "")) == "10220143"
+            ]
+        else:
+            print(f"API error: {response.status_code} - {response.text[:200]}")
     except Exception as e:
         print(f"Error getting cases: {e}")
     return []
@@ -364,26 +370,14 @@ def process_cases():
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Processed {new_count} new cases")
 
 
-import threading
-from flask import Flask
-app_web = Flask(__name__)
-
-@app_web.route("/")
-def index():
-    return "BILLZ Label Bot is running!"
-
-def run_bot():
+if __name__ == "__main__":
     print("BILLZ Label Bot started!")
+    print(f"Polling every {POLL_INTERVAL} seconds...")
+    
     while True:
         try:
             process_cases()
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error in main loop: {e}")
+        
         time.sleep(POLL_INTERVAL)
-
-if __name__ == "__main__":
-    thread = threading.Thread(target=run_bot)
-    thread.daemon = True
-    thread.start()
-    port = int(os.environ.get("PORT", 5000))
-    app_web.run(host="0.0.0.0", port=port)
