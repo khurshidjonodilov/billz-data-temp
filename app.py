@@ -253,12 +253,18 @@ def get_new_cases():
         if response.status_code == 200:
             data = response.json()
             cases = data.get("cases", [])
-            # Фильтруем только обращения ИИ-агента (staff_id = 10220143)
-            return [
+            print(f"Total cases from API: {len(cases)}")
+            for i, c in enumerate(cases[:3]):
+                if isinstance(c, dict) and "case" in c:
+                    case = c["case"]
+                    print(f"Case {i}: id={case.get('case_id')}, staff_id={case.get('staff_id')}")
+            filtered = [
                 c["case"] for c in cases
                 if isinstance(c, dict) and "case" in c
                 and str(c["case"].get("staff_id", "")) == "10220143"
             ]
+            print(f"AI-agent cases: {len(filtered)}")
+            return filtered
         else:
             print(f"API error: {response.status_code} - {response.text[:200]}")
     except Exception as e:
