@@ -238,7 +238,7 @@ def get_new_cases():
     """Получает новые обращения от ИИ-агента без меток"""
     url = f"https://{OMNIDESK_DOMAIN}/api/cases.json"
     params = {
-        "status": "opened",
+        "status": "open",
         "page": 1,
         "limit": 50
     }
