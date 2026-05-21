@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 # Настройки
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 OMNIDESK_API_KEY = os.environ.get("OMNIDESK_API_KEY", "")
+OMNIDESK_EMAIL = os.environ.get("OMNIDESK_EMAIL", "")
 OMNIDESK_DOMAIN = os.environ.get("OMNIDESK_DOMAIN", "billz.omnidesk.ru")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "30"))  # секунды
 
@@ -245,7 +246,7 @@ def get_new_cases():
     try:
         response = requests.get(
             url,
-            auth=(OMNIDESK_API_KEY, "x"),
+            auth=(OMNIDESK_EMAIL, OMNIDESK_API_KEY),
             params=params,
             timeout=10
         )
@@ -320,7 +321,7 @@ def add_label_to_case(case_id: str, label: str):
     try:
         response = requests.put(
             url,
-            auth=(OMNIDESK_API_KEY, "x"),
+            auth=(OMNIDESK_EMAIL, OMNIDESK_API_KEY),
             json={"case": {"labels": [label]}},
             timeout=10
         )
