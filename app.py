@@ -238,7 +238,7 @@ def get_new_cases():
     url = f"https://{OMNIDESK_DOMAIN}/api/cases.json"
     params = {
         "status": "opened",
-        "staff_id": "ai_agent",
+        "staff_id": "10220143",
         "page": 1,
         "limit": 50
     }
