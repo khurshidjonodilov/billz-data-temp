@@ -364,14 +364,26 @@ def process_cases():
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Processed {new_count} new cases")
 
 
-if __name__ == "__main__":
+import threading
+from flask import Flask
+app_web = Flask(__name__)
+
+@app_web.route("/")
+def index():
+    return "BILLZ Label Bot is running!"
+
+def run_bot():
     print("BILLZ Label Bot started!")
-    print(f"Polling every {POLL_INTERVAL} seconds...")
-    
     while True:
         try:
             process_cases()
         except Exception as e:
-            print(f"Error in main loop: {e}")
-        
+            print(f"Error: {e}")
         time.sleep(POLL_INTERVAL)
+
+if __name__ == "__main__":
+    thread = threading.Thread(target=run_bot)
+    thread.daemon = True
+    thread.start()
+    port = int(os.environ.get("PORT", 5000))
+    app_web.run(host="0.0.0.0", port=port)
